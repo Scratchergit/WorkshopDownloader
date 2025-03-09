@@ -41,6 +41,7 @@ namespace ModDownloader
             label3 = new Label();
             txtWorkshop = new TextBox();
             btnBrowseSteamCMD = new Button();
+            btnDownloadSteamCMD = new Button();
             txtSteamCMD = new TextBox();
             label2 = new Label();
             progressBar = new ProgressBar();
@@ -77,6 +78,7 @@ namespace ModDownloader
             splitContainer.Panel2.Controls.Add(txtModIds);
             splitContainer.Panel2.Controls.Add(label3);
             splitContainer.Panel2.Controls.Add(txtWorkshop);
+            splitContainer.Panel2.Controls.Add(btnDownloadSteamCMD);
             splitContainer.Panel2.Controls.Add(btnBrowseSteamCMD);
             splitContainer.Panel2.Controls.Add(txtSteamCMD);
             splitContainer.Panel2.Controls.Add(label2);
@@ -205,6 +207,17 @@ namespace ModDownloader
             btnBrowseSteamCMD.UseVisualStyleBackColor = true;
             btnBrowseSteamCMD.Click += btnBrowseSteamCMD_Click;
             // 
+            // btnDownloadSteamCMD
+            // 
+            btnDownloadSteamCMD.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            btnDownloadSteamCMD.Location = new Point(565, 49);
+            btnDownloadSteamCMD.Name = "btnDownloadSteamCMD";
+            btnDownloadSteamCMD.Size = new Size(40, 25);
+            btnDownloadSteamCMD.TabIndex = 7;
+            btnDownloadSteamCMD.Text = "⬇️";
+            btnDownloadSteamCMD.UseVisualStyleBackColor = true;
+            btnDownloadSteamCMD.Click += btnDownloadSteamCMD_Click;
+            // 
             // txtSteamCMD
             // 
             txtSteamCMD.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
@@ -303,6 +316,7 @@ namespace ModDownloader
         private Label label3;
         private TextBox txtWorkshop;
         private Button btnBrowseSteamCMD;
+        private Button btnDownloadSteamCMD;
         private TextBox txtSteamCMD;
         private Label label2;
         private ProgressBar progressBar;

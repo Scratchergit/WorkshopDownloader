@@ -1,18 +1,21 @@
 using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using System.Net.Http;
 
 namespace ModDownloader
 {
     public partial class MainForm : Form
     {
         private const string CONFIG_FILE = "config.json";
+        private const string STEAMCMD_URL = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip";
         private Config _config;
         private bool _isDownloading;
         private CancellationTokenSource? _cancellationTokenSource;
         private System.Windows.Forms.Timer _animationTimer;
         private int _currentFrame;
         private readonly string[] _loadingFrames = new[] { "⌛", "⏳" };
+        private readonly HttpClient _httpClient = new HttpClient();
 
         public MainForm()
         {
@@ -327,6 +330,104 @@ namespace ModDownloader
                 {
                     Directory.Delete(tempDir, true);
                 }
+            }
+        }
+
+        private async void btnDownloadSteamCMD_Click(object sender, EventArgs e)
+        {
+            if (_isDownloading)
+                return;
+
+            using var dialog = new FolderBrowserDialog
+            {
+                Description = "Select Directory for SteamCMD",
+                UseDescriptionForTitle = true
+            };
+
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            string targetDir = dialog.SelectedPath;
+            string zipPath = Path.Combine(targetDir, "steamcmd.zip");
+
+            _isDownloading = true;
+            _cancellationTokenSource = new CancellationTokenSource();
+            btnDownloadSteamCMD.Enabled = false;
+            btnBrowseSteamCMD.Enabled = false;
+            progressBar.Value = 0;
+            lblLoading.Text = "⬇️ Downloading SteamCMD...";
+            lblLoading.Visible = true;
+            _animationTimer.Start();
+
+            try
+            {
+                using var response = await _httpClient.GetAsync(STEAMCMD_URL, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+                var totalBytes = response.Content.Headers.ContentLength ?? -1L;
+                var canReportProgress = totalBytes != -1;
+
+                using var contentStream = await response.Content.ReadAsStreamAsync();
+                using var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
+                var buffer = new byte[8192];
+                long totalRead = 0;
+
+                while (true)
+                {
+                    if (_cancellationTokenSource.Token.IsCancellationRequested)
+                        break;
+
+                    var bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, _cancellationTokenSource.Token);
+                    if (bytesRead == 0)
+                        break;
+
+                    await fileStream.WriteAsync(buffer, 0, bytesRead, _cancellationTokenSource.Token);
+                    totalRead += bytesRead;
+
+                    if (canReportProgress)
+                    {
+                        var progress = (int)((totalRead * 100) / totalBytes);
+                        progressBar.Value = progress;
+                    }
+                }
+
+                // Extract the zip file
+                lblLoading.Text = "📦 Extracting SteamCMD...";
+                System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, targetDir);
+
+                // Clean up the zip file
+                File.Delete(zipPath);
+
+                // Set the SteamCMD path in config
+                _config.SteamCmdPath = targetDir;
+                txtSteamCMD.Text = targetDir;
+
+                // Set workshop path automatically
+                string workshopPath = Path.Combine(targetDir, "steamapps", "workshop", "content");
+                Directory.CreateDirectory(workshopPath);
+                _config.WorkshopPath = workshopPath;
+                txtWorkshop.Text = workshopPath;
+
+                SaveConfig();
+
+                MessageBox.Show("SteamCMD has been downloaded and installed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (OperationCanceledException)
+            {
+                MessageBox.Show("Download cancelled", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error downloading SteamCMD: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                _isDownloading = false;
+                btnDownloadSteamCMD.Enabled = true;
+                btnBrowseSteamCMD.Enabled = true;
+                lblLoading.Visible = false;
+                _animationTimer.Stop();
+                _cancellationTokenSource?.Dispose();
+                _cancellationTokenSource = null;
             }
         }
 

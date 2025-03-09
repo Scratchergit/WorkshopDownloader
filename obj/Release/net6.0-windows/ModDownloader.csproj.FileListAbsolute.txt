@@ -16,3 +16,4 @@ P:\desktop\New folder\codes\PYTHON\SomeAppCS\obj\Release\net6.0-windows\refint\M
 P:\desktop\New folder\codes\PYTHON\SomeAppCS\obj\Release\net6.0-windows\ModDownloader.pdb
 P:\desktop\New folder\codes\PYTHON\SomeAppCS\obj\Release\net6.0-windows\ModDownloader.genruntimeconfig.cache
 P:\desktop\New folder\codes\PYTHON\SomeAppCS\obj\Release\net6.0-windows\ref\ModDownloader.dll
+P:\desktop\New folder\codes\PYTHON\SomeAppCS\obj\Release\net6.0-windows\ModDownloader.sourcelink.json
