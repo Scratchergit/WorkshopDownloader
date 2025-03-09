@@ -1,0 +1,11 @@
+{
+  "Games": [
+    {
+      "Id": "2212330",
+      "Name": "Yomi"
+    }
+  ],
+  "SteamCmdPath": "P:\\Programs\\steamcmd",
+  "WorkshopPath": "P:\\Programs\\steamcmd\\steamapps\\workshop\\content",
+  "CurrentGameId": ""
+}
