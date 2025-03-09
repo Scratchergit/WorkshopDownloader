@@ -5,7 +5,7 @@
       "Name": "Yomi"
     }
   ],
-  "SteamCmdPath": "P:\\Programs\\steamcmd\\appcache",
-  "WorkshopPath": "P:\\Programs\\steamcmd\\appcache\\steamapps\\workshop\\content",
+  "SteamCmdPath": "P:\\Programs\\steamcmd",
+  "WorkshopPath": "P:\\Programs\\steamcmd\\steamapps\\workshop\\content",
   "CurrentGameId": ""
 }

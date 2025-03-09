@@ -2,6 +2,8 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Net.Http;
+using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 
 namespace ModDownloader
 {
@@ -19,7 +21,6 @@ namespace ModDownloader
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly Dictionary<string, (ProgressBar Bar, Label Label)> _downloadControls = new();
         private readonly FlowLayoutPanel _downloadPanel;
-        private bool _isDarkMode = false;
 
         public MainForm()
         {
@@ -32,96 +33,16 @@ namespace ModDownloader
                 WrapContents = false,
                 AutoScroll = true,
                 Dock = DockStyle.Bottom,
-                Height = 120,
-                Visible = false
+                Height = 150,
+                Visible = false,
+                Margin = new Padding(10),
+                BorderStyle = BorderStyle.FixedSingle
             };
             splitContainer.Panel2.Controls.Add(_downloadPanel);
-
-            // Add dark mode toggle button
-            var darkModeBtn = new Button
-            {
-                Text = "🌙",
-                Size = new Size(30, 30),
-                Location = new Point(475, 10),
-                Font = new Font("Segoe UI", 12F, FontStyle.Regular),
-                FlatStyle = FlatStyle.Flat,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Padding = new Padding(0),
-                Margin = new Padding(0)
-            };
-            darkModeBtn.Click += (s, e) => ToggleDarkMode();
-            splitContainer.Panel2.Controls.Add(darkModeBtn);
-
-            // Adjust other button sizes and positions
-            btnBrowseSteamCMD.Size = new Size(30, 30);
-            btnBrowseSteamCMD.Font = new Font("Segoe UI", 12F, FontStyle.Regular);
-            btnBrowseSteamCMD.TextAlign = ContentAlignment.MiddleCenter;
-            btnBrowseSteamCMD.Padding = new Padding(0);
-            btnBrowseSteamCMD.Margin = new Padding(0);
-
-            btnDownloadSteamCMD.Size = new Size(30, 30);
-            btnDownloadSteamCMD.Font = new Font("Segoe UI", 12F, FontStyle.Regular);
-            btnDownloadSteamCMD.TextAlign = ContentAlignment.MiddleCenter;
-            btnDownloadSteamCMD.Padding = new Padding(0);
-            btnDownloadSteamCMD.Margin = new Padding(0);
-
-            // Adjust text box width to accommodate buttons
-            txtSteamCMD.Size = new Size(470, 25);
 
             LoadConfig();
             SetupAnimationTimer();
             UpdateGameList();
-        }
-
-        private void ToggleDarkMode()
-        {
-            _isDarkMode = !_isDarkMode;
-            ApplyTheme();
-        }
-
-        private void ApplyTheme()
-        {
-            Color backColor = _isDarkMode ? Color.FromArgb(32, 32, 32) : SystemColors.Control;
-            Color foreColor = _isDarkMode ? Color.White : SystemColors.ControlText;
-            Color textBoxBackColor = _isDarkMode ? Color.FromArgb(48, 48, 48) : SystemColors.Window;
-
-            // Apply theme to form
-            this.BackColor = backColor;
-            this.ForeColor = foreColor;
-
-            // Apply to split container panels
-            splitContainer.Panel1.BackColor = backColor;
-            splitContainer.Panel2.BackColor = backColor;
-
-            // Apply to all controls
-            foreach (Control control in GetAllControls(this))
-            {
-                control.BackColor = control is TextBox || control is ListBox ? textBoxBackColor : backColor;
-                control.ForeColor = foreColor;
-
-                if (control is Button btn)
-                {
-                    btn.FlatStyle = FlatStyle.Flat;
-                    btn.FlatAppearance.BorderColor = _isDarkMode ? Color.Gray : SystemColors.ControlDark;
-                }
-            }
-
-            // Apply to download panel
-            _downloadPanel.BackColor = backColor;
-            foreach (Control control in _downloadPanel.Controls)
-            {
-                if (control is Label)
-                {
-                    control.BackColor = backColor;
-                    control.ForeColor = foreColor;
-                }
-            }
-        }
-
-        private IEnumerable<Control> GetAllControls(Control container)
-        {
-            var controls = container.Controls.Cast<Control>();
-            return controls.SelectMany(ctrl => GetAllControls(ctrl)).Concat(controls);
         }
 
         private void SetupAnimationTimer()
