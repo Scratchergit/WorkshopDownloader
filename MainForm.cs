@@ -9,6 +9,7 @@ namespace ModDownloader
     {
         private const string CONFIG_FILE = "config.json";
         private const string STEAMCMD_URL = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip";
+        private const int MAX_CONCURRENT_DOWNLOADS = 3;
         private Config _config;
         private bool _isDownloading;
         private CancellationTokenSource? _cancellationTokenSource;
@@ -16,10 +17,25 @@ namespace ModDownloader
         private int _currentFrame;
         private readonly string[] _loadingFrames = new[] { "⌛", "⏳" };
         private readonly HttpClient _httpClient = new HttpClient();
+        private readonly Dictionary<string, (ProgressBar Bar, Label Label)> _downloadControls = new();
+        private readonly FlowLayoutPanel _downloadPanel;
 
         public MainForm()
         {
             InitializeComponent();
+
+            // Initialize download panel
+            _downloadPanel = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.TopDown,
+                WrapContents = false,
+                AutoScroll = true,
+                Dock = DockStyle.Bottom,
+                Height = 120,
+                Visible = false
+            };
+            splitContainer.Panel2.Controls.Add(_downloadPanel);
+
             LoadConfig();
             SetupAnimationTimer();
             UpdateGameList();
@@ -94,6 +110,35 @@ namespace ModDownloader
             }
         }
 
+        private void AddDownloadControls(string modId)
+        {
+            var progressBar = new ProgressBar
+            {
+                Width = 546,
+                Height = 23,
+                Margin = new Padding(13, 3, 13, 0)
+            };
+
+            var label = new Label
+            {
+                AutoSize = true,
+                Text = $"⌛ Downloading mod {modId}...",
+                Font = new Font("Segoe UI", 10F),
+                Margin = new Padding(13, 0, 13, 10)
+            };
+
+            _downloadPanel.Controls.Add(progressBar);
+            _downloadPanel.Controls.Add(label);
+            _downloadControls[modId] = (progressBar, label);
+        }
+
+        private void ClearDownloadControls()
+        {
+            _downloadPanel.Controls.Clear();
+            _downloadControls.Clear();
+            _downloadPanel.Visible = false;
+        }
+
         private async void btnDownload_Click(object sender, EventArgs e)
         {
             if (_isDownloading)
@@ -120,29 +165,39 @@ namespace ModDownloader
             _cancellationTokenSource = new CancellationTokenSource();
             btnDownload.Enabled = false;
             btnStop.Enabled = true;
-            progressBar.Value = 0;
-            lblLoading.Visible = true;
-            _animationTimer.Start();
+            _downloadPanel.Visible = true;
+            ClearDownloadControls();
 
             try
             {
-                string? lastSuccessfulFolder = null;
-                int totalMods = modIds.Length;
-
-                for (int i = 0; i < modIds.Length; i++)
+                foreach (var modId in modIds)
                 {
-                    if (_cancellationTokenSource.Token.IsCancellationRequested)
-                        break;
+                    AddDownloadControls(modId);
+                }
 
-                    string modId = modIds[i];
-                    var progress = new Progress<int>(p =>
+                string? lastSuccessfulFolder = null;
+                var downloadTasks = new List<Task<(bool Success, string? ModsFolder)>>();
+                
+                // Process mods in batches of MAX_CONCURRENT_DOWNLOADS
+                for (int i = 0; i < modIds.Length; i += MAX_CONCURRENT_DOWNLOADS)
+                {
+                    var batch = modIds.Skip(i).Take(MAX_CONCURRENT_DOWNLOADS);
+                    var batchTasks = batch.Select(modId =>
                     {
-                        int overallProgress = (int)((i * 100 + p) / (float)totalMods);
-                        progressBar.Value = Math.Min(100, Math.Max(0, overallProgress));
+                        var progress = new Progress<int>(p =>
+                        {
+                            if (_downloadControls.TryGetValue(modId, out var controls))
+                            {
+                                controls.Bar.Value = Math.Min(100, Math.Max(0, p));
+                                controls.Label.Text = $"⌛ Downloading mod {modId}... ({p}%)";
+                            }
+                        });
+
+                        return DownloadMod(modId, _config.CurrentGameId, progress, _cancellationTokenSource.Token);
                     });
 
-                    var result = await DownloadMod(modId, _config.CurrentGameId, progress, _cancellationTokenSource.Token);
-                    if (result.Success)
+                    var results = await Task.WhenAll(batchTasks);
+                    foreach (var result in results.Where(r => r.Success && r.ModsFolder != null))
                     {
                         lastSuccessfulFolder = result.ModsFolder;
                     }
@@ -166,8 +221,7 @@ namespace ModDownloader
                 _isDownloading = false;
                 btnDownload.Enabled = true;
                 btnStop.Enabled = false;
-                lblLoading.Visible = false;
-                _animationTimer.Stop();
+                ClearDownloadControls();
                 _cancellationTokenSource?.Dispose();
                 _cancellationTokenSource = null;
             }
