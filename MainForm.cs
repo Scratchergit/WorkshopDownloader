@@ -19,6 +19,7 @@ namespace ModDownloader
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly Dictionary<string, (ProgressBar Bar, Label Label)> _downloadControls = new();
         private readonly FlowLayoutPanel _downloadPanel;
+        private bool _isDarkMode = false;
 
         public MainForm()
         {
@@ -36,9 +37,91 @@ namespace ModDownloader
             };
             splitContainer.Panel2.Controls.Add(_downloadPanel);
 
+            // Add dark mode toggle button
+            var darkModeBtn = new Button
+            {
+                Text = "🌙",
+                Size = new Size(30, 30),
+                Location = new Point(475, 10),
+                Font = new Font("Segoe UI", 12F, FontStyle.Regular),
+                FlatStyle = FlatStyle.Flat,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Padding = new Padding(0),
+                Margin = new Padding(0)
+            };
+            darkModeBtn.Click += (s, e) => ToggleDarkMode();
+            splitContainer.Panel2.Controls.Add(darkModeBtn);
+
+            // Adjust other button sizes and positions
+            btnBrowseSteamCMD.Size = new Size(30, 30);
+            btnBrowseSteamCMD.Font = new Font("Segoe UI", 12F, FontStyle.Regular);
+            btnBrowseSteamCMD.TextAlign = ContentAlignment.MiddleCenter;
+            btnBrowseSteamCMD.Padding = new Padding(0);
+            btnBrowseSteamCMD.Margin = new Padding(0);
+
+            btnDownloadSteamCMD.Size = new Size(30, 30);
+            btnDownloadSteamCMD.Font = new Font("Segoe UI", 12F, FontStyle.Regular);
+            btnDownloadSteamCMD.TextAlign = ContentAlignment.MiddleCenter;
+            btnDownloadSteamCMD.Padding = new Padding(0);
+            btnDownloadSteamCMD.Margin = new Padding(0);
+
+            // Adjust text box width to accommodate buttons
+            txtSteamCMD.Size = new Size(470, 25);
+
             LoadConfig();
             SetupAnimationTimer();
             UpdateGameList();
+        }
+
+        private void ToggleDarkMode()
+        {
+            _isDarkMode = !_isDarkMode;
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            Color backColor = _isDarkMode ? Color.FromArgb(32, 32, 32) : SystemColors.Control;
+            Color foreColor = _isDarkMode ? Color.White : SystemColors.ControlText;
+            Color textBoxBackColor = _isDarkMode ? Color.FromArgb(48, 48, 48) : SystemColors.Window;
+
+            // Apply theme to form
+            this.BackColor = backColor;
+            this.ForeColor = foreColor;
+
+            // Apply to split container panels
+            splitContainer.Panel1.BackColor = backColor;
+            splitContainer.Panel2.BackColor = backColor;
+
+            // Apply to all controls
+            foreach (Control control in GetAllControls(this))
+            {
+                control.BackColor = control is TextBox || control is ListBox ? textBoxBackColor : backColor;
+                control.ForeColor = foreColor;
+
+                if (control is Button btn)
+                {
+                    btn.FlatStyle = FlatStyle.Flat;
+                    btn.FlatAppearance.BorderColor = _isDarkMode ? Color.Gray : SystemColors.ControlDark;
+                }
+            }
+
+            // Apply to download panel
+            _downloadPanel.BackColor = backColor;
+            foreach (Control control in _downloadPanel.Controls)
+            {
+                if (control is Label)
+                {
+                    control.BackColor = backColor;
+                    control.ForeColor = foreColor;
+                }
+            }
+        }
+
+        private IEnumerable<Control> GetAllControls(Control container)
+        {
+            var controls = container.Controls.Cast<Control>();
+            return controls.SelectMany(ctrl => GetAllControls(ctrl)).Concat(controls);
         }
 
         private void SetupAnimationTimer()
@@ -415,41 +498,78 @@ namespace ModDownloader
 
             try
             {
+                // Download the file
                 using var response = await _httpClient.GetAsync(STEAMCMD_URL, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
                 var totalBytes = response.Content.Headers.ContentLength ?? -1L;
                 var canReportProgress = totalBytes != -1;
 
-                using var contentStream = await response.Content.ReadAsStreamAsync();
-                using var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
-                var buffer = new byte[8192];
-                long totalRead = 0;
-
-                while (true)
+                // Make sure the file doesn't exist
+                if (File.Exists(zipPath))
                 {
-                    if (_cancellationTokenSource.Token.IsCancellationRequested)
-                        break;
-
-                    var bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, _cancellationTokenSource.Token);
-                    if (bytesRead == 0)
-                        break;
-
-                    await fileStream.WriteAsync(buffer, 0, bytesRead, _cancellationTokenSource.Token);
-                    totalRead += bytesRead;
-
-                    if (canReportProgress)
+                    try
                     {
-                        var progress = (int)((totalRead * 100) / totalBytes);
-                        progressBar.Value = progress;
+                        File.Delete(zipPath);
+                    }
+                    catch
+                    {
+                        zipPath = Path.Combine(targetDir, $"steamcmd_{DateTime.Now.Ticks}.zip");
                     }
                 }
 
+                // Download to temporary file first
+                var tempZipPath = zipPath + ".tmp";
+                using (var contentStream = await response.Content.ReadAsStreamAsync())
+                using (var fileStream = new FileStream(tempZipPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    var buffer = new byte[8192];
+                    long totalRead = 0;
+                    int bytesRead;
+
+                    while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                    {
+                        if (_cancellationTokenSource.Token.IsCancellationRequested)
+                            break;
+
+                        await fileStream.WriteAsync(buffer, 0, bytesRead);
+                        totalRead += bytesRead;
+
+                        if (canReportProgress)
+                        {
+                            var progress = (int)((totalRead * 100) / totalBytes);
+                            progressBar.Value = progress;
+                        }
+                    }
+                }
+
+                // Move temporary file to final location
+                if (File.Exists(zipPath))
+                {
+                    File.Delete(zipPath);
+                }
+                File.Move(tempZipPath, zipPath);
+
                 // Extract the zip file
                 lblLoading.Text = "📦 Extracting SteamCMD...";
-                System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, targetDir);
+                await Task.Run(() => 
+                {
+                    System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, targetDir, true);
+                });
 
                 // Clean up the zip file
-                File.Delete(zipPath);
+                try
+                {
+                    File.Delete(zipPath);
+                }
+                catch
+                {
+                    // If we can't delete it now, schedule it for deletion on next startup
+                    File.WriteAllText(Path.Combine(targetDir, "delete_zip.bat"), 
+                        $@"@echo off
+                        timeout /t 2 /nobreak > nul
+                        del ""{zipPath}""
+                        del ""%~f0""");
+                }
 
                 // Set the SteamCMD path in config
                 _config.SteamCmdPath = targetDir;

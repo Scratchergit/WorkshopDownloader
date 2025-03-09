@@ -14,6 +14,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ModDownloader
-build_property.ProjectDir = p:\desktop\New folder\codes\PYTHON\SomeAppCS\
+build_property.ProjectDir = P:\desktop\New folder\codes\PYTHON\SomeAppCS\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

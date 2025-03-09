@@ -198,23 +198,29 @@ namespace ModDownloader
             // 
             // btnBrowseSteamCMD
             // 
-            btnBrowseSteamCMD.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            btnBrowseSteamCMD.Location = new Point(519, 49);
+            btnBrowseSteamCMD.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            btnBrowseSteamCMD.Location = new Point(485, 49);
             btnBrowseSteamCMD.Name = "btnBrowseSteamCMD";
-            btnBrowseSteamCMD.Size = new Size(40, 25);
+            btnBrowseSteamCMD.Size = new Size(30, 25);
             btnBrowseSteamCMD.TabIndex = 6;
             btnBrowseSteamCMD.Text = "📁";
+            btnBrowseSteamCMD.TextAlign = ContentAlignment.MiddleCenter;
+            btnBrowseSteamCMD.Padding = new Padding(0);
+            btnBrowseSteamCMD.Margin = new Padding(0);
             btnBrowseSteamCMD.UseVisualStyleBackColor = true;
             btnBrowseSteamCMD.Click += btnBrowseSteamCMD_Click;
             // 
             // btnDownloadSteamCMD
             // 
-            btnDownloadSteamCMD.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            btnDownloadSteamCMD.Location = new Point(565, 49);
+            btnDownloadSteamCMD.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            btnDownloadSteamCMD.Location = new Point(515, 49);
             btnDownloadSteamCMD.Name = "btnDownloadSteamCMD";
-            btnDownloadSteamCMD.Size = new Size(40, 25);
+            btnDownloadSteamCMD.Size = new Size(30, 25);
             btnDownloadSteamCMD.TabIndex = 7;
             btnDownloadSteamCMD.Text = "⬇️";
+            btnDownloadSteamCMD.TextAlign = ContentAlignment.MiddleCenter;
+            btnDownloadSteamCMD.Padding = new Padding(0);
+            btnDownloadSteamCMD.Margin = new Padding(0);
             btnDownloadSteamCMD.UseVisualStyleBackColor = true;
             btnDownloadSteamCMD.Click += btnDownloadSteamCMD_Click;
             // 
@@ -224,7 +230,7 @@ namespace ModDownloader
             txtSteamCMD.Location = new Point(13, 49);
             txtSteamCMD.Name = "txtSteamCMD";
             txtSteamCMD.ReadOnly = true;
-            txtSteamCMD.Size = new Size(500, 25);
+            txtSteamCMD.Size = new Size(470, 25);
             txtSteamCMD.TabIndex = 5;
             // 
             // label2
