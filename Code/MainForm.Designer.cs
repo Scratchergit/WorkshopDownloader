@@ -6,6 +6,10 @@ namespace ModDownloader
         ///  Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+        private MenuStrip menuStrip;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem editToolStripMenuItem;
+        private ToolStripMenuItem downloadSteamCMDToolStripMenuItem;
 
         /// <summary>
         ///  Clean up any resources being used.
@@ -29,6 +33,10 @@ namespace ModDownloader
         private void InitializeComponent()
         {
             splitContainer = new SplitContainer();
+            menuStrip = new MenuStrip();
+            fileToolStripMenuItem = new ToolStripMenuItem();
+            editToolStripMenuItem = new ToolStripMenuItem();
+            downloadSteamCMDToolStripMenuItem = new ToolStripMenuItem();
             label1 = new Label();
             lstGames = new ListBox();
             label6 = new Label();
@@ -52,13 +60,43 @@ namespace ModDownloader
             splitContainer.Panel1.SuspendLayout();
             splitContainer.Panel2.SuspendLayout();
             splitContainer.SuspendLayout();
+            menuStrip.SuspendLayout();
             SuspendLayout();
+            // 
+            // menuStrip
+            // 
+            menuStrip.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem });
+            menuStrip.Location = new Point(0, 0);
+            menuStrip.Name = "menuStrip";
+            menuStrip.Size = new Size(784, 24);
+            menuStrip.TabIndex = 1;
+            menuStrip.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { downloadSteamCMDToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new Size(37, 20);
+            fileToolStripMenuItem.Text = "&File";
+            // 
+            // editToolStripMenuItem
+            // 
+            editToolStripMenuItem.Name = "editToolStripMenuItem";
+            editToolStripMenuItem.Size = new Size(39, 20);
+            editToolStripMenuItem.Text = "&Edit";
+            //
+            // downloadSteamCMDToolStripMenuItem
+            //
+            downloadSteamCMDToolStripMenuItem.Name = "downloadSteamCMDToolStripMenuItem";
+            downloadSteamCMDToolStripMenuItem.Size = new Size(180, 22);
+            downloadSteamCMDToolStripMenuItem.Text = "Download SteamCMD";
+            downloadSteamCMDToolStripMenuItem.Click += btnDownloadSteamCMD_Click;
             // 
             // splitContainer
             // 
             splitContainer.Dock = DockStyle.Fill;
             splitContainer.FixedPanel = FixedPanel.Panel1;
-            splitContainer.Location = new Point(0, 0);
+            splitContainer.Location = new Point(0, 24);
             splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel1
@@ -289,10 +327,14 @@ namespace ModDownloader
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(784, 461);
             Controls.Add(splitContainer);
+            Controls.Add(menuStrip);
+            MainMenuStrip = menuStrip;
             MinimumSize = new Size(800, 500);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Mod Downloader";
+            menuStrip.ResumeLayout(false);
+            menuStrip.PerformLayout();
             splitContainer.Panel1.ResumeLayout(false);
             splitContainer.Panel1.PerformLayout();
             splitContainer.Panel2.ResumeLayout(false);
@@ -300,6 +342,7 @@ namespace ModDownloader
             ((System.ComponentModel.ISupportInitialize)splitContainer).EndInit();
             splitContainer.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

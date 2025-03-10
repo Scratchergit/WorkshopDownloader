@@ -60,11 +60,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "P:\\desktop\\New folder\\codes\\PYTHON\\SomeAppCS\\ModDownloader.csproj",
+      "projectUniqueName": "P:\\desktop\\New folder\\codes\\PYTHON\\SomeAppCS\\code\\ModDownloader.csproj",
       "projectName": "ModDownloader",
-      "projectPath": "P:\\desktop\\New folder\\codes\\PYTHON\\SomeAppCS\\ModDownloader.csproj",
+      "projectPath": "P:\\desktop\\New folder\\codes\\PYTHON\\SomeAppCS\\code\\ModDownloader.csproj",
       "packagesPath": "C:\\Users\\Pablo\\.nuget\\packages\\",
-      "outputPath": "P:\\desktop\\New folder\\codes\\PYTHON\\SomeAppCS\\obj\\",
+      "outputPath": "P:\\desktop\\New folder\\codes\\PYTHON\\SomeAppCS\\code\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Pablo\\AppData\\Roaming\\NuGet\\NuGet.Config"
