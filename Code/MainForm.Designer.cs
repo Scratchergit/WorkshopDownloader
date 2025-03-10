@@ -76,14 +76,16 @@ namespace ModDownloader
             // 
             fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { downloadSteamCMDToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(37, 20);
+            fileToolStripMenuItem.Size = new Size(0, 0);
             fileToolStripMenuItem.Text = "&File";
+            fileToolStripMenuItem.BackColor = Color.FromArgb(255, 255, 255);
             // 
             // editToolStripMenuItem
             // 
             editToolStripMenuItem.Name = "editToolStripMenuItem";
             editToolStripMenuItem.Size = new Size(39, 20);
             editToolStripMenuItem.Text = "&Edit";
+            editToolStripMenuItem.BackColor = Color.FromArgb(255, 255, 255);
             //
             // downloadSteamCMDToolStripMenuItem
             //
@@ -101,7 +103,9 @@ namespace ModDownloader
             // 
             // splitContainer.Panel1
             // 
-            splitContainer.Panel1.Controls.Add(btnDownloadSteamCMD);
+            //splitContainer.Panel1.Controls.Add(btnDownloadSteamCMD);
+            //splitContainer.Panel2.Controls.Add(label2);
+            //splitContainer.Panel2.Controls.Add(txtSteamCMD);
             splitContainer.Panel1.Controls.Add(label1);
             splitContainer.Panel1.Controls.Add(lstGames);
             splitContainer.Panel1MinSize = 200;
@@ -132,7 +136,7 @@ namespace ModDownloader
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label1.Location = new Point(12, 31);
+            label1.Location = new Point(13, 7);
             label1.Name = "label1";
             label1.Size = new Size(102, 21);
             label1.TabIndex = 1;
@@ -144,7 +148,7 @@ namespace ModDownloader
             lstGames.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
             lstGames.FormattingEnabled = true;
             lstGames.ItemHeight = 17;
-            lstGames.Location = new Point(12, 56);
+            lstGames.Location = new Point(12, 32);
             lstGames.Name = "lstGames";
             lstGames.Size = new Size(176, 376);
             lstGames.TabIndex = 0;
@@ -219,7 +223,7 @@ namespace ModDownloader
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label3.Location = new Point(13, 84);
+            label3.Location = new Point(13, 82);
             label3.Name = "label3";
             label3.Size = new Size(174, 21);
             label3.TabIndex = 8;
@@ -236,19 +240,19 @@ namespace ModDownloader
             // 
             // btnDownloadSteamCMD
             // 
-            btnDownloadSteamCMD.Font = new Font("Segoe UI", 7F, FontStyle.Regular, GraphicsUnit.Point);
-            btnDownloadSteamCMD.Location = new Point(0, 0);
-            btnDownloadSteamCMD.Name = "btnDownloadSteamCMD";
-            btnDownloadSteamCMD.Size = new Size(120, 25);
-            btnDownloadSteamCMD.TabIndex = 7;
-            btnDownloadSteamCMD.Text = "Download SteamCMD";
-            btnDownloadSteamCMD.UseVisualStyleBackColor = true;
-            btnDownloadSteamCMD.Click += btnDownloadSteamCMD_Click;
+            //btnDownloadSteamCMD.Font = new Font("Segoe UI", 7F, FontStyle.Regular, GraphicsUnit.Point);
+            //btnDownloadSteamCMD.Location = new Point(0, 0);
+            //btnDownloadSteamCMD.Name = "btnDownloadSteamCMD";
+            //btnDownloadSteamCMD.Size = new Size(120, 25);
+            //btnDownloadSteamCMD.TabIndex = 7;
+            //btnDownloadSteamCMD.Text = "Download SteamCMD";
+            //btnDownloadSteamCMD.UseVisualStyleBackColor = true;
+            //btnDownloadSteamCMD.Click += btnDownloadSteamCMD_Click;
             // 
             // txtSteamCMD
             // 
             txtSteamCMD.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            txtSteamCMD.Location = new Point(13, 56);
+            txtSteamCMD.Location = new Point(13, 32);
             txtSteamCMD.Name = "txtSteamCMD";
             txtSteamCMD.ReadOnly = true;
             txtSteamCMD.Size = new Size(516, 25);
@@ -258,7 +262,7 @@ namespace ModDownloader
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(13, 31);
+            label2.Location = new Point(13, 7);
             label2.Name = "label2";
             label2.Size = new Size(144, 21);
             label2.TabIndex = 4;
@@ -312,7 +316,7 @@ namespace ModDownloader
             // btnBrowseSteamCMD
             // 
             btnBrowseSteamCMD.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            btnBrowseSteamCMD.Location = new Point(529, 55);
+            btnBrowseSteamCMD.Location = new Point(529, 31);
             btnBrowseSteamCMD.Name = "btnBrowseSteamCMD";
             btnBrowseSteamCMD.Size = new Size(30, 27);
             btnBrowseSteamCMD.TabIndex = 6;
